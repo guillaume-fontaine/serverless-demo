@@ -16,7 +16,7 @@ def handler(event, context):
     dynamodb = boto3.resource(
         'dynamodb',
         region_name='us-east-1',
-        endpoint_url='http://ip10-0-6-5-cvhtafqb9qb14bivkpqg-4566.direct.lab-boris.fr',
+        endpoint_url='http://ip10-0-7-4-cvi159ib9qb14bivkpt0-4566.direct.lab-boris.fr',
         aws_access_key_id='test',
         aws_secret_access_key='test'
     )
