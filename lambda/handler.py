@@ -46,15 +46,6 @@ def handler(event, context):
             "message": body.get("message")
         }
 
-    elif route == "/contact" and method == "GET":
-        scan_result = table.scan()
-        items = scan_result.get("Items", [])
-        return {
-             "statusCode": 200,
-            "headers": {"Content-Type": "application/json"},
-            "body": json.dumps(items)
-       }
-
         try:
             table.put_item(Item=item)
             return {
