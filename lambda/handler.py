@@ -1,3 +1,7 @@
+import json
+import boto3
+import os
+
 def handler(event, context):
     print("EVENT DEBUG:", json.dumps(event))  # ← à cet endroit
 
