@@ -92,7 +92,3 @@ resource "aws_api_gateway_stage" "stage" {
   rest_api_id   = aws_api_gateway_rest_api.api.id
   stage_name    = "dev"
 }
-
-output "api_id" {
-  value = aws_api_gateway_rest_api.api.id
-}
