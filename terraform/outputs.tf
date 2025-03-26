@@ -3,5 +3,5 @@ output "api_id" {
 }
 
 output "lambda_env_table_name" {
-  value = aws_lambda_function.api.environment[0].variables.TABLE_NAME
+  value = aws_lambda_function.api.environment_variables["TABLE_NAME"]
 }
