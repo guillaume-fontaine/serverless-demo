@@ -116,3 +116,20 @@ resource "aws_api_gateway_stage" "stage" {
   rest_api_id   = aws_api_gateway_rest_api.api.id
   stage_name    = "dev"
 }
+
+resource "aws_lambda_permission" "allow_apigw_hello" {
+  statement_id  = "AllowExecutionFromAPIGatewayHello"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.api.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/*/*/hello"
+}
+
+resource "aws_lambda_permission" "allow_apigw_contact" {
+  statement_id  = "AllowExecutionFromAPIGatewayContact"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.api.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/*/*/contact"
+}
+
