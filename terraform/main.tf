@@ -36,6 +36,11 @@ resource "aws_lambda_function" "api" {
   role          = aws_iam_role.lambda_exec.arn
   filename      = "lambda.zip"
   source_code_hash = filebase64sha256("lambda.zip")
+  environment {
+    variables = {
+      TABLE_NAME = aws_dynamodb_table.contacts.name
+    }
+  }
 }
 
 resource "aws_dynamodb_table" "contacts" {
