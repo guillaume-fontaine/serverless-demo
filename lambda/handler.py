@@ -3,7 +3,7 @@ import boto3
 import os
 
 def handler(event, context):
-    print("EVENT DEBUG:", json.dumps(event))  # ← à cet endroit
+    print("EVENT DEBUG:", json.dumps(event))  # 🐛 Ajouté pour debug
 
     table_name = os.environ.get("TABLE_NAME")
 
@@ -20,11 +20,14 @@ def handler(event, context):
         aws_access_key_id='test',
         aws_secret_access_key='test'
     )
-
     table = dynamodb.Table(table_name)
 
-    route = event.get("rawPath", "")  # ← on debug ça !
-    method = event.get("requestContext", {}).get("http", {}).get("method", "")
+    # 🔍 Récupérer route et méthode de manière robuste
+    route = event.get("rawPath") or event.get("path") or ""
+    method = (
+        event.get("requestContext", {}).get("http", {}).get("method") or
+        event.get("httpMethod") or ""
+    )
 
     if route == "/hello" and method == "GET":
         return {
@@ -55,4 +58,3 @@ def handler(event, context):
                 "method": method
             })
         }
-
