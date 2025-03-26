@@ -3,7 +3,7 @@ import boto3
 import os
 
 def handler(event, context):
-    # Sécurisé : lecture dynamique de la variable d’environnement
+    # Lecture sécurisée de la variable d’environnement
     table_name = os.environ.get("TABLE_NAME")
 
     if not table_name:
@@ -12,6 +12,7 @@ def handler(event, context):
             "body": json.dumps({"error": "TABLE_NAME not set"})
         }
 
+    # Connexion à DynamoDB localstack
     dynamodb = boto3.resource(
         'dynamodb',
         region_name='us-east-1',
@@ -22,17 +23,19 @@ def handler(event, context):
 
     table = dynamodb.Table(table_name)
 
-    route = event.get("rawPath", "")
+    # Traitement de la requête
+    raw_path = event.get("rawPath", "")
+    route = raw_path.split("/")[-1]  # Récupère juste le dernier segment de l'URL
     method = event.get("requestContext", {}).get("http", {}).get("method", "")
 
-    if route == "/hello" and method == "GET":
+    if route == "hello" and method == "GET":
         return {
             "statusCode": 200,
             "headers": {"Content-Type": "application/json"},
             "body": json.dumps({"message": "Hello from Lambda!"})
         }
 
-    elif route == "/contact" and method == "POST":
+    elif route == "contact" and method == "POST":
         body = json.loads(event.get("body", "{}"))
         item = {
             "email": body.get("email"),
