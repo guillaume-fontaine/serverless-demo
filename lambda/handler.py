@@ -1,9 +1,8 @@
-import json
-import boto3
-import os
-
 def handler(event, context):
+    print("EVENT DEBUG:", json.dumps(event))  # ← à cet endroit
+
     table_name = os.environ.get("TABLE_NAME")
+
     if not table_name:
         return {
             "statusCode": 500,
@@ -17,44 +16,39 @@ def handler(event, context):
         aws_access_key_id='test',
         aws_secret_access_key='test'
     )
+
     table = dynamodb.Table(table_name)
 
-    raw_path = event.get("rawPath", "")
+    route = event.get("rawPath", "")  # ← on debug ça !
     method = event.get("requestContext", {}).get("http", {}).get("method", "")
-    normalized_path = raw_path.rstrip("/").split("/")[-1].lower()
 
-    if normalized_path == "hello" and method == "GET":
+    if route == "/hello" and method == "GET":
         return {
             "statusCode": 200,
             "headers": {"Content-Type": "application/json"},
             "body": json.dumps({"message": "Hello from Lambda!"})
         }
 
-    elif normalized_path == "contact" and method == "POST":
-        try:
-            body = json.loads(event.get("body", "{}"))
-            item = {
-                "email": body.get("email"),
-                "name": body.get("name"),
-                "message": body.get("message")
-            }
-            table.put_item(Item=item)
-            return {
-                "statusCode": 200,
-                "body": json.dumps({"status": "saved"})
-            }
-        except Exception as e:
-            return {
-                "statusCode": 500,
-                "body": json.dumps({"error": str(e)})
-            }
+    elif route == "/contact" and method == "POST":
+        body = json.loads(event.get("body", "{}"))
+        item = {
+            "email": body.get("email"),
+            "name": body.get("name"),
+            "message": body.get("message")
+        }
+        table.put_item(Item=item)
+        return {
+            "statusCode": 200,
+            "body": json.dumps({"status": "saved"})
+        }
 
     else:
         return {
             "statusCode": 404,
             "body": json.dumps({
                 "error": "Not found",
-                "path": raw_path,
+                "path": route,
                 "method": method
             })
         }
+
