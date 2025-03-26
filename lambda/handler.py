@@ -3,6 +3,8 @@ import boto3
 import os
 
 def handler(event, context):
+print("EVENT DEBUG:", json.dumps(event))
+ 
     table_name = os.environ.get("TABLE_NAME")
     if not table_name:
         return {
