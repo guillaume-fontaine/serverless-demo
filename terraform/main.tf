@@ -105,6 +105,18 @@ resource "aws_api_gateway_integration" "contact" {
 
 resource "aws_api_gateway_deployment" "deployment" {
   rest_api_id = aws_api_gateway_rest_api.api.id
+
+  triggers = {
+    redeployment = sha1(jsonencode([
+      aws_api_gateway_resource.hello.id,
+      aws_api_gateway_resource.contact.id,
+      aws_api_gateway_method.hello.id,
+      aws_api_gateway_method.contact.id,
+      aws_api_gateway_integration.hello.id,
+      aws_api_gateway_integration.contact.id
+    ]))
+  }
+
   depends_on = [
     aws_api_gateway_integration.hello,
     aws_api_gateway_integration.contact
