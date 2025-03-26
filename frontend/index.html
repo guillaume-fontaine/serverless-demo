@@ -20,7 +20,7 @@
 
   <script>
     async function callHello() {
-      const res = await fetch("http://ip10-0-6-5-cvhtafqb9qb14bivkpqg-4566.direct.lab-boris.fr/restapis/YOUR_API_ID/dev/_user_request_/hello");
+      const res = await fetch("http://ip10-0-6-5-cvhtafqb9qb14bivkpqg-4566.direct.lab-boris.fr/restapis/frbpgskqkn/dev/_user_request_/hello");
       document.getElementById("hello-response").innerText = await res.text();
     }
 
@@ -28,7 +28,7 @@
       e.preventDefault();
       const form = new FormData(e.target);
       const data = Object.fromEntries(form.entries());
-      const res = await fetch("http://ip10-0-6-5-cvhtafqb9qb14bivkpqg-4566.direct.lab-boris.fr/restapis/YOUR_API_ID/dev/_user_request_/contact", {
+      const res = await fetch("http://ip10-0-6-5-cvhtafqb9qb14bivkpqg-4566.direct.lab-boris.fr/restapis/frbpgskqkn/dev/_user_request_/contact", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify(data)
