@@ -29,6 +29,17 @@ resource "aws_iam_role" "lambda_exec" {
   })
 }
 
+resource "aws_dynamodb_table" "contacts" {
+  name         = "contacts"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "id"
+
+  attribute {
+    name = "id"
+    type = "S"
+  }
+}
+
 resource "aws_lambda_function" "api" {
   function_name = "hello-api"
   handler       = "handler.handler"
@@ -40,17 +51,6 @@ resource "aws_lambda_function" "api" {
     variables = {
       TABLE_NAME = aws_dynamodb_table.contacts.name
     }
-  }
-}
-
-resource "aws_dynamodb_table" "contacts" {
-  name         = "contacts"
-  billing_mode = "PAY_PER_REQUEST"
-  hash_key     = "id"
-
-  attribute {
-    name = "id"
-    type = "S"
   }
 }
 
@@ -103,6 +103,22 @@ resource "aws_api_gateway_integration" "contact" {
   uri                     = aws_lambda_function.api.invoke_arn
 }
 
+resource "aws_lambda_permission" "allow_apigw_hello" {
+  statement_id  = "AllowExecutionFromAPIGatewayHello"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.api.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/*/*/hello"
+}
+
+resource "aws_lambda_permission" "allow_apigw_contact" {
+  statement_id  = "AllowExecutionFromAPIGatewayContact"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.api.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/*/*/contact"
+}
+
 resource "aws_api_gateway_deployment" "deployment" {
   rest_api_id = aws_api_gateway_rest_api.api.id
 
@@ -128,20 +144,3 @@ resource "aws_api_gateway_stage" "stage" {
   rest_api_id   = aws_api_gateway_rest_api.api.id
   stage_name    = "dev"
 }
-
-resource "aws_lambda_permission" "allow_apigw_hello" {
-  statement_id  = "AllowExecutionFromAPIGatewayHello"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.api.function_name
-  principal     = "apigateway.amazonaws.com"
-  source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/*/*/hello"
-}
-
-resource "aws_lambda_permission" "allow_apigw_contact" {
-  statement_id  = "AllowExecutionFromAPIGatewayContact"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.api.function_name
-  principal     = "apigateway.amazonaws.com"
-  source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/*/*/contact"
-}
-
