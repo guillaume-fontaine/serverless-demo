@@ -55,12 +55,12 @@ resource "aws_lambda_function" "api" {
   }
 }
 
-resource "aws_apigatewayv2_api" "http_api" {
-  name          = "hello-api"
-  protocol_type = "HTTP"
+resource "aws_apigateway_rest_api" "rest_api" {
+  name        = "hello-api"
+  description = "API REST simulée dans LocalStack"
 }
 
-resource "aws_apigatewayv2_integration" "lambda_integration" {
+resource "aws_apigateway_integration" "lambda_integration" {
   api_id                 = aws_apigatewayv2_api.http_api.id
   integration_type       = "AWS_PROXY"
   integration_uri        = aws_lambda_function.api.invoke_arn
@@ -68,19 +68,19 @@ resource "aws_apigatewayv2_integration" "lambda_integration" {
   payload_format_version = "2.0"
 }
 
-resource "aws_apigatewayv2_route" "hello_route" {
+resource "aws_apigateway_route" "hello_route" {
   api_id    = aws_apigatewayv2_api.http_api.id
   route_key = "GET /hello"
   target    = "integrations/${aws_apigatewayv2_integration.lambda_integration.id}"
 }
 
-resource "aws_apigatewayv2_route" "contact_route" {
+resource "aws_apigateway_route" "contact_route" {
   api_id    = aws_apigatewayv2_api.http_api.id
   route_key = "POST /contact"
   target    = "integrations/${aws_apigatewayv2_integration.lambda_integration.id}"
 }
 
-resource "aws_apigatewayv2_stage" "default" {
+resource "aws_apigateway_stage" "default" {
   api_id      = aws_apigatewayv2_api.http_api.id
   name        = "$default"
   auto_deploy = true
@@ -91,5 +91,5 @@ resource "aws_lambda_permission" "apigw" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.api.function_name
   principal     = "apigateway.amazonaws.com"
-  source_arn    = "${aws_apigatewayv2_api.http_api.execution_arn}/*/*"
+  source_arn    = "${aws_apigateway_api.http_api.execution_arn}/*/*"
 }
