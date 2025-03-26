@@ -28,24 +28,18 @@ resource "aws_iam_role" "lambda_exec" {
     }]
   })
 }
-
 resource "aws_lambda_function" "api" {
-  function_name = "hello-api"
-  handler       = "handler.handler"
-  runtime       = "python3.9"
-  role          = aws_iam_role.lambda_exec.arn
-  filename      = "lambda.zip"
+  function_name    = "hello-api"
+  handler          = "handler.handler"
+  runtime          = "python3.9"
+  role             = aws_iam_role.lambda_exec.arn
+  filename         = "lambda.zip"
   source_code_hash = filebase64sha256("lambda.zip")
-}
 
-resource "aws_dynamodb_table" "contacts" {
-  name         = "contacts"
-  billing_mode = "PAY_PER_REQUEST"
-  hash_key     = "id"
-
-  attribute {
-    name = "id"
-    type = "S"
+  environment {
+    variables = {
+      TABLE_NAME = aws_dynamodb_table.contacts.name
+    }
   }
 }
 
