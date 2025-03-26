@@ -2,17 +2,26 @@ import json
 import boto3
 import os
 
-dynamodb = boto3.resource(
-    'dynamodb',
-    region_name='us-east-1',
-    endpoint_url='http://ip10-0-6-5-cvhtafqb9qb14bivkpqg-4566.direct.lab-boris.fr',
-    aws_access_key_id='test',
-    aws_secret_access_key='test'
-)
-
-table = dynamodb.Table(os.environ['TABLE_NAME'])
-
 def handler(event, context):
+    # Sécurisé : lecture dynamique de la variable d’environnement
+    table_name = os.environ.get("TABLE_NAME")
+
+    if not table_name:
+        return {
+            "statusCode": 500,
+            "body": json.dumps({"error": "TABLE_NAME not set"})
+        }
+
+    dynamodb = boto3.resource(
+        'dynamodb',
+        region_name='us-east-1',
+        endpoint_url='http://ip10-0-6-5-cvhtafqb9qb14bivkpqg-4566.direct.lab-boris.fr',
+        aws_access_key_id='test',
+        aws_secret_access_key='test'
+    )
+
+    table = dynamodb.Table(table_name)
+
     route = event.get("rawPath", "")
     method = event.get("requestContext", {}).get("http", {}).get("method", "")
 
