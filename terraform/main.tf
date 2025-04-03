@@ -86,6 +86,13 @@ resource "aws_api_gateway_method" "contact" {
   authorization = "NONE"
 }
 
+resource "aws_api_gateway_method" "contact_get" {
+  rest_api_id   = aws_api_gateway_rest_api.api.id
+  resource_id   = aws_api_gateway_resource.contact.id
+  http_method   = "GET"
+  authorization = "NONE"
+}
+
 resource "aws_api_gateway_integration" "hello" {
   rest_api_id             = aws_api_gateway_rest_api.api.id
   resource_id             = aws_api_gateway_resource.hello.id
@@ -113,8 +120,10 @@ resource "aws_api_gateway_deployment" "deployment" {
       aws_api_gateway_resource.contact.id,
       aws_api_gateway_method.hello.id,
       aws_api_gateway_method.contact.id,
+      aws_api_gateway_method.contact_get.id,
       aws_api_gateway_integration.hello.id,
-      aws_api_gateway_integration.contact.id
+      aws_api_gateway_integration.contact.id,
+      aws_api_gateway_integration.contact_get.id
     ]))
   }
 
@@ -124,7 +133,8 @@ resource "aws_api_gateway_deployment" "deployment" {
 
   depends_on = [
     aws_api_gateway_integration.hello,
-    aws_api_gateway_integration.contact
+    aws_api_gateway_integration.contact,
+    aws_api_gateway_integration.contact_get
   ]
 }
 
